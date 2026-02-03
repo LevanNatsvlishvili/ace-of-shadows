@@ -6,16 +6,13 @@ import fetchData from './utils/dialogue/chat/fetchData';
 export async function init() {
   const { app } = await renderer();
 
-  // Add iPhone background
-  const iphone = await iphoneLoader();
-  app.stage.addChild(iphone);
+  // Add iPhone background (commented out for now)
+  await iphoneLoader();
 
   const { dialogue, avatars, emojis } = await fetchData();
 
-  const { chatList, centerChat } = await createChat(dialogue, avatars, emojis);
+  const { chatList } = await createChat(dialogue, avatars, emojis);
   app.stage.addChild(chatList);
-
-  app.renderer.on('resize', centerChat);
 }
 
 init();

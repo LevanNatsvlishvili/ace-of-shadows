@@ -1,6 +1,10 @@
 import { Texture, Container, Assets } from 'pixi.js';
+import gsap from 'gsap';
 import { createChatMessage } from './chatCreator';
 import type { AvatarItem, DialogueItem, EmojiItem } from '../../types';
+
+const MESSAGE_GAP = 14;
+const ANIMATION_DURATION = 0.4;
 
 export async function createChat(
   dialogue: DialogueItem[],
@@ -40,39 +44,82 @@ export async function createChat(
     }
   }
 
-  const sizeOfChatLength = 5;
-  let chatY = 0;
-  for (let i = 0; i < Math.min(dialogue.length, sizeOfChatLength); i++) {
-    const msg = dialogue[i];
-    const msgText = msg.text ?? '';
-    const side = msg.name === 'Penny' ? 'left' : 'right';
-    const avatarTex = avatarTextures[msg.name];
+  const chatMessages: Container[] = [];
+  // Fixed bottom position where new messages appear
+  const bottomY = 300;
 
+  function addChatMessage(msg: DialogueItem) {
     const chatMessage = createChatMessage({
-      text: msgText,
-      side,
-      avatarTexture: avatarTex,
+      text: msg.text ?? '',
+      side: msg.name === 'Penny' ? 'left' : 'right',
+      avatarTexture: avatarTextures[msg.name],
       emojiTextures,
     });
 
-    chatMessage.x = 0;
-    chatMessage.y = chatY;
-    chatList.addChild(chatMessage);
+    // Add new message to array first
+    chatMessages.push(chatMessage);
 
-    const currentY = (chatMessage as any).__bubbleHeight ?? 60;
-    chatY += currentY + 14;
+    // Recalculate all positions from bottom up
+    let currentY = bottomY;
+    for (let i = chatMessages.length - 1; i >= 0; i--) {
+      const message = chatMessages[i];
+      const messageHeight = (message as any).__bubbleHeight ?? 60;
+
+      const targetY = currentY - messageHeight;
+
+      if (message === chatMessage) {
+        // New message: animate in from below
+        message.x = 0;
+        message.y = targetY + 50;
+        message.alpha = 0;
+        chatList.addChild(message);
+
+        gsap.to(message, {
+          y: targetY,
+          alpha: 1,
+          duration: ANIMATION_DURATION,
+          ease: 'power2.out',
+        });
+      } else {
+        // Existing message: animate to new position
+        gsap.to(message, {
+          y: targetY,
+          duration: ANIMATION_DURATION,
+          ease: 'power2.out',
+        });
+      }
+
+      currentY = targetY - MESSAGE_GAP;
+    }
   }
 
-  const bounds = chatList.getBounds();
-  chatList.pivot.set(bounds.width / 2, bounds.height / 2);
-  chatList.x = window.innerWidth / 2 + 20;
-  chatList.y = window.innerHeight / 1.6;
+  // Add first message
+  if (dialogue.length > 0) {
+    addChatMessage(dialogue[0]);
+  }
+
+  // Add remaining messages over time
+  let messageIndex = 1;
+  const interval = setInterval(() => {
+    if (messageIndex < dialogue.length) {
+      addChatMessage(dialogue[messageIndex]);
+      messageIndex++;
+    } else {
+      clearInterval(interval);
+    }
+  }, 2000);
+
+  // Position chat container
+  chatList.x = window.innerWidth / 2 - 150;
+  chatList.y = window.innerHeight / 2 - 200;
 
   // Re-center on resize
   const centerChat = () => {
-    chatList.x = window.screen.width / 2;
-    chatList.y = window.screen.height / 2;
+    chatList.x = window.innerWidth / 2 - 150;
+    chatList.y = window.innerHeight / 2 - 200;
   };
 
-  return { chatList, centerChat };
+  window.addEventListener('resize', centerChat);
+
+  return { chatList };
 }

@@ -11,12 +11,13 @@ type ChatMessageOptions = {
   emojiTextures?: Record<string, Texture>; // emoji name -> texture
 };
 
+const avatarSize = 44;
+const maxBubbleWidth = 240;
+
 export function createChatMessage({
   text,
   side = 'left',
-  maxBubbleWidthidth = 260,
   avatarTexture,
-  avatarSize = 44,
   emojiTextures = {},
 }: ChatMessageOptions) {
   const root = new Container();
@@ -47,7 +48,7 @@ export function createChatMessage({
 
   // ----- Text with inline emojis -----
   const textColor = side === 'right' ? 0xffffff : 0x111111;
-  const messageContent = renderTextWithEmojis(text, emojiTextures, textColor, maxBubbleWidthidth);
+  const messageContent = renderTextWithEmojis(text, emojiTextures, textColor, maxBubbleWidth);
 
   // Padding inside bubble
   const padX = 14;
@@ -147,7 +148,7 @@ function renderTextWithEmojis(
 
         const wordText = new Text({
           text: word,
-          style: { fontSize: 18, fill: textColor },
+          style: { fontSize: 14, fill: textColor },
         });
 
         // Wrap to next line if needed
