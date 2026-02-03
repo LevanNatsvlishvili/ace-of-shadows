@@ -1,8 +1,12 @@
 import { Texture, Container, Assets } from 'pixi.js';
 import { createChatMessage } from './chatCreator';
-import type { AvatarItem, DialogueItem } from '../../types';
+import type { AvatarItem, DialogueItem, EmojiItem } from '../../types';
 
-export async function createChat(dialogue: DialogueItem[], avatarItems: AvatarItem[]) {
+export async function createChat(
+  dialogue: DialogueItem[],
+  avatarItems: AvatarItem[],
+  emojiItems: EmojiItem[]
+) {
   // Chat container
   const chatList = new Container();
 
@@ -21,8 +25,24 @@ export async function createChat(dialogue: DialogueItem[], avatarItems: AvatarIt
     }
   }
 
+  // Preload all emoji textures
+  const emojiTextures: Record<string, Texture> = {};
+  for (const emoji of emojiItems) {
+    try {
+      Assets.add({
+        alias: `emoji-${emoji.name}`,
+        src: emoji.url,
+        loadParser: 'loadTextures',
+      });
+      emojiTextures[emoji.name] = await Assets.load(`emoji-${emoji.name}`);
+    } catch (err) {
+      console.warn('Failed to load emoji for', emoji.name, err);
+    }
+  }
+
+  const sizeOfChatLength = 5;
   let chatY = 0;
-  for (let i = 0; i < Math.min(dialogue.length, 5); i++) {
+  for (let i = 0; i < Math.min(dialogue.length, sizeOfChatLength); i++) {
     const msg = dialogue[i];
     const msgText = msg.text ?? '';
     const side = msg.name === 'Penny' ? 'left' : 'right';
@@ -32,6 +52,7 @@ export async function createChat(dialogue: DialogueItem[], avatarItems: AvatarIt
       text: msgText,
       side,
       avatarTexture: avatarTex,
+      emojiTextures,
     });
 
     chatMessage.x = 0;

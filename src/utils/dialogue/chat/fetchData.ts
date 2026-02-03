@@ -12,7 +12,7 @@ const fetchData = async () => {
     console.log(dataJson);
     dialogue = dataJson?.dialogue ?? [];
     avatars = dataJson?.avatars ?? [];
-    emojis = dataJson?.emojis ?? [];
+    emojis = dataJson?.emojies ?? [];
   } catch (err) {
     console.error('Failed to fetch dialogue:', err);
   }

@@ -8,6 +8,7 @@ type ChatMessageOptions = {
   maxBubbleWidthidth?: number; // wrap width
   avatarTexture?: Texture; // optional: provide an avatar image
   avatarSize?: number;
+  emojiTextures?: Record<string, Texture>; // emoji name -> texture
 };
 
 export function createChatMessage({
@@ -16,6 +17,7 @@ export function createChatMessage({
   maxBubbleWidthidth = 260,
   avatarTexture,
   avatarSize = 44,
+  emojiTextures = {},
 }: ChatMessageOptions) {
   const root = new Container();
 
@@ -31,7 +33,6 @@ export function createChatMessage({
   if (avatarTexture) {
     const avatar = new Sprite(avatarTexture);
 
-    console.log(avatar);
     avatar.anchor.set(0.5);
     avatar.width = avatarSize;
     avatar.height = avatarSize;
@@ -44,38 +45,31 @@ export function createChatMessage({
     avatarContainer.addChild(mask);
   }
 
-  // ----- Text -----
-  const messageText = new Text({
-    text,
-    style: {
-      fontSize: 18,
-      fill: side === 'right' ? 0xffffff : 0x111111,
-      wordWrap: true,
-      wordWrapWidth: maxBubbleWidthidth,
-      lineHeight: 24,
-    },
-  });
+  // ----- Text with inline emojis -----
+  const textColor = side === 'right' ? 0xffffff : 0x111111;
+  const messageContent = renderTextWithEmojis(text, emojiTextures, textColor, maxBubbleWidthidth);
 
   // Padding inside bubble
   const padX = 14;
   const padY = 10;
 
-  // Measure text (Pixi calculates width/height after creation)
-  const bubbleWidth = Math.ceil(messageText.width + padX * 2);
-  const bubbleHeight = Math.ceil(messageText.height + padY * 2);
+  // Measure content bounds
+  const contentBounds = messageContent.getBounds();
+  const bubbleWidth = Math.ceil(contentBounds.width + padX * 2);
+  const bubbleHeight = Math.ceil(contentBounds.height + padY * 2);
 
   // ----- Bubble (rounded rect) -----
   const bubble = new Graphics()
     .roundRect(0, 0, bubbleWidth, bubbleHeight, 16)
     .fill(side === 'right' ? 0x2f7cf6 : 0xe9e9eb);
 
-  // Put text inside bubble
-  messageText.x = padX;
-  messageText.y = padY;
+  // Put content inside bubble
+  messageContent.x = padX;
+  messageContent.y = padY;
 
   const bubbleContainer = new Container();
   bubbleContainer.addChild(bubble);
-  bubbleContainer.addChild(messageText);
+  bubbleContainer.addChild(messageContent);
 
   // ----- Layout: left vs right -----
   const gap = 10; // space between avatar and bubble
@@ -101,4 +95,74 @@ export function createChatMessage({
   (root as any).__bubbleHeight = Math.max(avatarSize, bubbleHeight);
 
   return root;
+}
+
+function renderTextWithEmojis(
+  text: string,
+  emojiMap: Record<string, Texture> = {},
+  textColor: number,
+  maxWidth: number
+) {
+  const container = new Container();
+  // Split text keeping the {emoji} delimiters
+  const parts = text.split(/(\{[a-zA-Z0-9_]+\})/g);
+
+  let x = 0;
+  let y = 0;
+  const lineHeight = 24;
+  const emojiSize = 20;
+
+  for (const part of parts) {
+    if (!part) continue;
+
+    // Check if this part is an emoji placeholder like {sad}
+    const emojiMatch = part.match(/^\{([a-zA-Z0-9_]+)\}$/);
+
+    if (emojiMatch) {
+      const emojiName = emojiMatch[1];
+      const emojiTex = emojiMap[emojiName];
+
+      if (emojiTex) {
+        // Wrap to next line if needed
+        if (x + emojiSize > maxWidth && x > 0) {
+          x = 0;
+          y += lineHeight;
+        }
+
+        const emoji = new Sprite(emojiTex);
+        emoji.width = emojiSize;
+        emoji.height = emojiSize;
+        emoji.x = x;
+        emoji.y = y + 2; // slight offset to align with text
+
+        container.addChild(emoji);
+        x += emojiSize + 4;
+      }
+    } else {
+      // Regular text - split by spaces for word wrapping
+      const words = part.split(/(\s+)/);
+
+      for (const word of words) {
+        if (!word) continue;
+
+        const wordText = new Text({
+          text: word,
+          style: { fontSize: 18, fill: textColor },
+        });
+
+        // Wrap to next line if needed
+        if (x + wordText.width > maxWidth && x > 0) {
+          x = 0;
+          y += lineHeight;
+        }
+
+        wordText.x = x;
+        wordText.y = y;
+        container.addChild(wordText);
+        x += wordText.width;
+      }
+    }
+  }
+
+  return container;
 }

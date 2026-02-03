@@ -10,9 +10,9 @@ export async function init() {
   const iphone = await iphoneLoader();
   app.stage.addChild(iphone);
 
-  const { dialogue, avatars } = await fetchData();
+  const { dialogue, avatars, emojis } = await fetchData();
 
-  const { chatList, centerChat } = await createChat(dialogue, avatars);
+  const { chatList, centerChat } = await createChat(dialogue, avatars, emojis);
   app.stage.addChild(chatList);
 
   app.renderer.on('resize', centerChat);
