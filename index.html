@@ -10,6 +10,17 @@
   <body>
     <!-- <div id="app"></div> -->
     <canvas id="canvas"></canvas>
-    <script type="module" src="/src/main.ts"></script>
+    <button id="loadBtn">Load Ace of Shadows</button>
+
+    <script type="module">
+      const btn = document.getElementById('loadBtn');
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        btn.textContent = 'Loading...';
+        const { init } = await import('/src/aces-of-shadow.ts');
+        await init();
+        btn.style.display = 'none';
+      });
+    </script>
   </body>
 </html>
