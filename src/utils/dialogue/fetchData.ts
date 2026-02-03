@@ -1,4 +1,4 @@
-import type { AvatarItem, DialogueItem, EmojiItem } from '../../types';
+import type { AvatarItem, DialogueItem, EmojiItem } from '../types';
 
 const fetchData = async () => {
   let dialogue: DialogueItem[] = [];

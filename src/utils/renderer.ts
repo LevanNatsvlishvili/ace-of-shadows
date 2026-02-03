@@ -1,5 +1,8 @@
 import { Application, Container } from 'pixi.js';
 
+// Singleton: only one app instance
+let appInstance: Application | null = null;
+
 const renderer = async () => {
   const canvas = document.querySelector<HTMLCanvasElement>('#canvas');
 
@@ -7,30 +10,35 @@ const renderer = async () => {
     throw new Error('Canvas with id="canvas" not found in HTML');
   }
 
-  const app = new Application();
+  // If app already exists, clear it and reuse
+  if (appInstance) {
+    // Remove all children from stage
+    appInstance.stage.removeChildren();
+  } else {
+    // Create new app only once
+    appInstance = new Application();
 
-  await app.init({
-    canvas, // tell Pixi which canvas to use
-    resizeTo: window, // auto resize when window changes
-    backgroundAlpha: 0, // transparent background
-    antialias: true, // smoother edges
-  });
+    await appInstance.init({
+      canvas,
+      resizeTo: window,
+      backgroundAlpha: 0,
+      antialias: true,
+    });
 
-  app.ticker.maxFPS = 60;
+    appInstance.ticker.maxFPS = 60;
+  }
 
   const container = new Container();
-
-  app.stage.addChild(container);
+  appInstance.stage.addChild(container);
 
   const recenterContainer = () => {
-    container.position.set(app.screen.width / 2, app.screen.height / 2);
+    container.position.set(appInstance!.screen.width / 2, appInstance!.screen.height / 2);
   };
 
-  // Initial center and on-resize center (after Pixi resizes the renderer).
   recenterContainer();
-  app.renderer.on('resize', recenterContainer);
+  appInstance.renderer.on('resize', recenterContainer);
 
-  return { app, container };
+  return { app: appInstance, container };
 };
 
 export default renderer;

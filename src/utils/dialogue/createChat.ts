@@ -1,7 +1,7 @@
 import { Texture, Container, Assets } from 'pixi.js';
 import gsap from 'gsap';
 import { createChatMessage } from './chatCreator';
-import type { AvatarItem, DialogueItem, EmojiItem } from '../../types';
+import type { AvatarItem, DialogueItem, EmojiItem } from '../types';
 
 const MESSAGE_GAP = 14;
 const ANIMATION_DURATION = 0.4;

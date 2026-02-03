@@ -14,6 +14,3 @@ export async function init() {
   moveCards();
   setInterval(moveCards, 1000);
 }
-
-// Run immediately when script loads
-init();

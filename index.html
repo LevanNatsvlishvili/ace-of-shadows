@@ -10,18 +10,30 @@
   <body>
     <!-- <div id="app"></div> -->
     <canvas id="canvas"></canvas>
-    <!-- <button id="loadBtn">Load Ace of Shadows</button> -->
-    <script type="module" src="/src/dialogue.ts"></script>
+    <div class="btn-container">
+      <button class="btn" id="loadBtn">Load Ace of Shadows</button>
+      <button class="btn" id="loadDialogueBtn">Load Dialogue</button>
+    </div>
+    <!-- <script type="module" src="/src/dialogue.ts"></script> -->
     <!-- <script type="module" src="/src/aces-of-shadow.ts"></script> -->
-    <!-- <script type="module">
+    <script type="module">
       const btn = document.getElementById('loadBtn');
       btn.addEventListener('click', async () => {
         btn.disabled = true;
         btn.textContent = 'Loading...';
         const { init } = await import('/src/aces-of-shadow.ts');
         await init();
-        btn.style.display = 'none';
+        document.querySelector('.btn-container')?.classList.add('hidden');
       });
-    </script> -->
+
+      const dialogueBtn = document.getElementById('loadDialogueBtn');
+      dialogueBtn.addEventListener('click', async () => {
+        dialogueBtn.disabled = true;
+        dialogueBtn.textContent = 'Loading...';
+        const { init } = await import('/src/dialogue.ts');
+        await init();
+        document.querySelector('.btn-container')?.classList.add('hidden');
+      });
+    </script>
   </body>
 </html>
