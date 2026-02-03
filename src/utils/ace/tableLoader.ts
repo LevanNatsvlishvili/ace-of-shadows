@@ -1,7 +1,7 @@
 import { Assets, Sprite } from 'pixi.js';
 
 const tableLoader = async () => {
-  const tex = await Assets.load('/table-texture.jpg');
+  const tex = await Assets.load('/aces-of-shadows/table-texture.jpg');
   const table = new Sprite(tex);
   table.anchor.set(1);
 

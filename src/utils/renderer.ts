@@ -16,6 +16,8 @@ const renderer = async () => {
     antialias: true, // smoother edges
   });
 
+  app.ticker.maxFPS = 60;
+
   const container = new Container();
 
   app.stage.addChild(container);

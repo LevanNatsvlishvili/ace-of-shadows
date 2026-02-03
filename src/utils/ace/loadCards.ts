@@ -6,7 +6,7 @@ import type { Container } from 'pixi.js';
 
 // Async function because we need to WAIT for assets and app init
 export const loadCards = async (container: Container) => {
-  const manifestRes = await fetch('/cards/manifest.json');
+  const manifestRes = await fetch('/aces-of-shadows/cards/manifest.json');
   if (!manifestRes.ok) {
     throw new Error(
       `Failed to load card manifest: ${manifestRes.status} ${manifestRes.statusText}`
@@ -18,9 +18,11 @@ export const loadCards = async (container: Container) => {
     ? (manifest.files.filter((f): f is string => typeof f === 'string') as string[])
     : [];
   if (files.length === 0)
-    throw new Error('Card manifest has no files. Check `public/cards/manifest.json`.');
+    throw new Error(
+      'Card manifest has no files. Check `public/aces-of-shadows/cards/manifest.json`.'
+    );
 
-  const urls = files.map((f) => `/cards/${f}`);
+  const urls = files.map((f) => `/aces-of-shadows/cards/${f}`);
   const textures = (await Promise.all(urls.map((url) => Assets.load(url)))) as Texture[];
 
   const cards: Sprite[] = [];
