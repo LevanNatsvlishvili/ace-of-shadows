@@ -1,7 +1,7 @@
 import { Assets, Container, Sprite } from 'pixi.js';
 import { flame as flameUtils } from './flame';
 
-export async function torch() {
+async function torch() {
   const container = new Container();
 
   // Flame
@@ -22,3 +22,4 @@ export async function torch() {
 
   return { torch: container, animateFlame };
 }
+export default torch;

@@ -22,7 +22,7 @@ export async function flame() {
   // Frame animation state
   let frameIndex = 0;
   let frameTimer = 0;
-  const FRAME_DURATION = 12; // Frames to wait before switching (lower = faster animation)
+  const frameSpeed = 8; // Frames to wait before switching (lower = faster animation)
 
   // Animation loop
   const animateFlame = (ticker: Ticker) => {
@@ -30,7 +30,7 @@ export async function flame() {
 
     // Frame animation - cycle through pixel-flame-1 to 4
     frameTimer += dt;
-    if (frameTimer >= FRAME_DURATION) {
+    if (frameTimer >= frameSpeed) {
       frameTimer = 0;
       frameIndex = (frameIndex + 1) % flameFrames.length;
       flame.texture = flameFrames[frameIndex];
