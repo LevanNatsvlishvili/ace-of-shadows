@@ -3,7 +3,11 @@ import { Application, Container } from 'pixi.js';
 // Singleton: only one app instance
 let appInstance: Application | null = null;
 
-const renderer = async () => {
+interface InitProps {
+  backgroundColor?: number;
+}
+
+const renderer = async (props: InitProps = {}) => {
   const canvas = document.querySelector<HTMLCanvasElement>('#canvas');
 
   if (!canvas) {
@@ -22,6 +26,7 @@ const renderer = async () => {
       canvas,
       resizeTo: window,
       backgroundAlpha: 0,
+      backgroundColor: props?.backgroundColor || 0x000000, // default to black
       antialias: true,
     });
 
