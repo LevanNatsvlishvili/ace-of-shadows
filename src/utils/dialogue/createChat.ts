@@ -111,12 +111,12 @@ export async function createChat(
 
   // Position chat container
   chatList.x = window.innerWidth / 2 - 150;
-  chatList.y = window.innerHeight / 2 - 200;
+  chatList.y = window.innerHeight / 2 - 50;
 
   // Re-center on resize
   const centerChat = () => {
     chatList.x = window.innerWidth / 2 - 150;
-    chatList.y = window.innerHeight / 2 - 200;
+    chatList.y = window.innerHeight / 2 - 50;
   };
 
   window.addEventListener('resize', centerChat);
