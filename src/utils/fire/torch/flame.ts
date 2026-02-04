@@ -1,7 +1,6 @@
 import { Assets, Sprite, Texture, Ticker } from 'pixi.js';
 
 export async function flame() {
-  // Load all 4 pixel flame frames
   const flameFrames: Texture[] = [
     await Assets.load('/fire/pixel-fire-1.png'),
     await Assets.load('/fire/pixel-fire-2.png'),
@@ -11,24 +10,17 @@ export async function flame() {
 
   const flameScale = 0.5;
 
-  // Create flame sprite
   const flame = new Sprite(flameFrames[0]);
   flame.anchor.set(0.5, 1); // Anchor at bottom center
   flame.scale.set(flameScale); // Adjust scale as needed
 
-  // Position flame at center-bottom
-  flame.y = 200;
-
-  // Frame animation state
   let frameIndex = 0;
   let frameTimer = 0;
-  const frameSpeed = 8; // Frames to wait before switching (lower = faster animation)
+  const frameSpeed = 8; // fire anime speed
 
-  // Animation loop
   const animateFlame = (ticker: Ticker) => {
     const dt = ticker.deltaTime;
 
-    // Frame animation - cycle through pixel-flame-1 to 4
     frameTimer += dt;
     if (frameTimer >= frameSpeed) {
       frameTimer = 0;
@@ -36,10 +28,10 @@ export async function flame() {
       flame.texture = flameFrames[frameIndex];
     }
 
-    // Optional: slight flickering alpha for extra effect
+    // Flicekring effect
     flame.alpha = 0.9 + Math.random() * 0.1;
 
-    // Optional: tiny scale pulse
+    // Increase / decrease of flame size
     const pulse = flameScale + Math.sin(Date.now() * 0.005) * 0.005;
     flame.scale.set(pulse);
   };

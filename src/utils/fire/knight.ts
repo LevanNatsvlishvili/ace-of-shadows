@@ -4,17 +4,16 @@ import torch from './torch';
 export async function knight() {
   const container = new Container();
 
-  // Load knight textures (still and moving frames)
+  // knight textures
   const knightStillTexture = await Assets.load('/fire/knight.png');
   const knightMovingTexture = await Assets.load('/fire/knight-moving-2.png');
 
-  // Knight frames: still + moving with color adjustments to match
+  // knight frames
   const knightFrames: { texture: Texture; tint: number; scale: number }[] = [
     { texture: knightStillTexture, tint: 0xffffff, scale: 0.25 }, // Still - no tint
     { texture: knightMovingTexture, tint: 0xdddddd, scale: 0.25 }, // Moving - slightly darker to match
   ];
 
-  // Create knight sprite starting with still pose
   const knightSprite = new Sprite(knightFrames[0].texture);
   knightSprite.anchor.set(0.5);
   knightSprite.scale.set(knightFrames[0].scale);
@@ -22,7 +21,7 @@ export async function knight() {
   knightSprite.position.set(0, 275);
   container.addChild(knightSprite);
 
-  // Load torch
+  // torch
   const { torch: torchSprite, animateFlame } = await torch();
   torchSprite.position.set(100, 260);
   container.addChild(torchSprite);
@@ -34,13 +33,13 @@ export async function knight() {
   const FRAME_SPEED = 15; // Frames between texture swaps when moving
   const MOVE_SPEED = 3; // Pixels per frame
 
-  // Keyboard state
+  // keyboard state
   const keys: Record<string, boolean> = {
     ArrowLeft: false,
     ArrowRight: false,
   };
 
-  // Apply frame properties (texture, tint, scale)
+  // for matching the frames with different colors
   const applyFrame = (index: number) => {
     const frame = knightFrames[index];
     knightSprite.texture = frame.texture;
@@ -50,7 +49,6 @@ export async function knight() {
     knightSprite.scale.set(direction * frame.scale, frame.scale);
   };
 
-  // Function to start/stop movement
   const setMoving = (moving: boolean) => {
     isMoving = moving;
     if (!moving) {
@@ -60,7 +58,7 @@ export async function knight() {
     }
   };
 
-  // Keyboard event listeners
+  // arrow keys
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key in keys) {
       keys[e.key] = true;
@@ -80,7 +78,6 @@ export async function knight() {
   const animateKnight = (ticker: Ticker) => {
     const dt = ticker.deltaTime;
 
-    // Handle horizontal movement
     const movingLeft = keys.ArrowLeft;
     const movingRight = keys.ArrowRight;
     const shouldMove = movingLeft || movingRight;
@@ -105,12 +102,12 @@ export async function knight() {
         }
       }
 
-      // Start walking animation if not already
+      // start
       if (!isMoving) {
         setMoving(true);
       }
     } else {
-      // Stop walking animation
+      // Stop walking
       if (isMoving) {
         setMoving(false);
       }
@@ -127,7 +124,7 @@ export async function knight() {
     }
   };
 
-  // Cleanup function to remove event listeners
+  // Cleanup
   const destroy = () => {
     window.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('keyup', onKeyUp);
