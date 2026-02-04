@@ -1,4 +1,4 @@
-import { Application, Container } from 'pixi.js';
+import { Application, Container, Text, Ticker } from 'pixi.js';
 
 // Singleton: only one app instance
 let appInstance: Application | null = null;
@@ -42,6 +42,24 @@ const renderer = async (props: InitProps = {}) => {
 
   recenterContainer();
   appInstance.renderer.on('resize', recenterContainer);
+
+  // add fps text
+  // FPS counter in top left
+  const fpsText = new Text({
+    text: 'FPS: 0',
+    style: {
+      fontFamily: 'Arial',
+      fontSize: 16,
+      fill: 0x00ff00,
+      fontWeight: 'bold',
+    },
+  });
+  fpsText.position.set(10, 10);
+  appInstance.stage.addChild(fpsText);
+
+  appInstance.ticker.add((ticker: Ticker) => {
+    fpsText.text = `FPS: ${Math.round(ticker.FPS)}`;
+  });
 
   return { app: appInstance, container };
 };
