@@ -1,8 +1,16 @@
 import { Assets, Sprite } from 'pixi.js';
 import type { Texture } from 'pixi.js';
-import { cardScale, totalCards } from './consts';
+import { getCardScale, totalCards } from './consts';
 import gsap from 'gsap';
 import type { Container } from 'pixi.js';
+
+// Get responsive values based on screen size
+const getResponsiveValues = () => {
+  const scale = getCardScale();
+  const moveDistance = Math.min(400, window.innerHeight * 0.25);
+  const stackOffset = Math.max(0.3, 0.5 * (window.innerWidth / 1440));
+  return { scale, moveDistance, stackOffset };
+};
 
 // Async function because we need to WAIT for assets and app init
 export const loadCards = async (container: Container) => {
@@ -39,16 +47,26 @@ export const loadCards = async (container: Container) => {
   deck.length = totalCards;
   shuffleInPlace(deck);
 
+  const { scale, stackOffset } = getResponsiveValues();
+
   for (let i = 0; i < totalCards; i++) {
     const card = new Sprite(deck[i]);
     card.anchor.set(0.5);
-    card.scale.set(cardScale);
+    card.scale.set(scale);
     card.position.set(0, 0);
-    card.position.x = i * -0.5;
+    card.position.x = i * -stackOffset;
 
     cards.push(card);
-    // container.addChild(card);
   }
+
+  // Update card scales on resize
+  const updateCardScales = () => {
+    const { scale } = getResponsiveValues();
+    cards.forEach((card) => {
+      card.scale.set(scale);
+    });
+  };
+  window.addEventListener('resize', updateCardScales);
 
   function moveCards() {
     if (cards.length > 0) {
@@ -58,13 +76,15 @@ export const loadCards = async (container: Container) => {
       // bring to front
       container.addChild(card);
 
+      const { moveDistance } = getResponsiveValues();
+
       gsap.to(card, {
         duration: 2,
-        y: card.y + 200,
+        y: card.y + moveDistance,
         ease: 'power2.inOut',
       });
     }
   }
-  // Update tweens every frame
+
   return { cards, moveCards };
 };

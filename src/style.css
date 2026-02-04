@@ -64,8 +64,35 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 90%;
+  max-width: 300px;
+}
+
+.btn-container .btn {
+  padding: 1em 1.5em;
+  font-size: clamp(14px, 4vw, 18px);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-container.hidden {
   display: none;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .btn-container {
+    gap: 15px;
+  }
+  
+  .btn-container .btn {
+    padding: 1.2em 1.5em;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  /* Touch device - larger tap targets */
+  .btn-container .btn {
+    min-height: 48px;
+  }
 }
