@@ -18,13 +18,21 @@ export async function knight() {
   knightSprite.anchor.set(0.5);
   knightSprite.scale.set(knightFrames[0].scale);
   knightSprite.tint = knightFrames[0].tint;
-  knightSprite.position.set(0, 275);
   container.addChild(knightSprite);
 
   // torch
   const { torch: torchSprite, animateFlame } = await torch();
-  torchSprite.position.set(100, 260);
   container.addChild(torchSprite);
+
+  // Position knight relative to screen (30% from center toward bottom)
+  const positionKnight = () => {
+    const knightY = window.innerHeight * 0.3;
+    knightSprite.position.set(0, knightY);
+    torchSprite.position.set(100, knightY - 15);
+  };
+
+  positionKnight();
+  window.addEventListener('resize', positionKnight);
 
   // Animation state
   let isMoving = false;
