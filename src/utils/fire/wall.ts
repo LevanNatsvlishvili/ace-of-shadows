@@ -1,4 +1,4 @@
-import { Assets, Sprite, Texture, Ticker } from 'pixi.js';
+import { Assets, Sprite } from 'pixi.js';
 
 export async function wall() {
   const wallTexture = await Assets.load('/fire/wall.png');

@@ -41,7 +41,6 @@ export async function flame() {
 
     // Optional: tiny scale pulse
     const pulse = flameScale + Math.sin(Date.now() * 0.005) * 0.005;
-    console.log(pulse);
     flame.scale.set(pulse);
   };
 
