@@ -77,6 +77,18 @@ export async function init() {
   // Add arrow controls to DOM
   createArrowControls();
 
+  // Move view up on mobile only (for fire)
+  const MOBILE_BREAKPOINT = 768;
+  const MOBILE_VIEW_OFFSET_Y = -50;
+
+  const adjustForMobile = () => {
+    const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+    container.y = app.screen.height / 2 + (isMobile ? MOBILE_VIEW_OFFSET_Y : 0);
+  };
+
+  adjustForMobile();
+  window.addEventListener('resize', adjustForMobile);
+
   app.ticker.add((ticker: Ticker) => {
     animateKnightFlame(ticker);
     animateKnight(ticker);
